@@ -6,8 +6,6 @@ import ParallaxScrollView from "@/components/parallax-scroll-view";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { Link } from "expo-router";
-import DialogWindow from "@/components/ui/modals/dialog-window/dialog-window";
-import ModalWindow from "@/components/ui/modals/modal-window/modal-window";
 
 export default function HomeScreen() {
   return (

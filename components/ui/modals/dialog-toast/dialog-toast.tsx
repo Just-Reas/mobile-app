@@ -1,18 +1,28 @@
 import React from "react";
-import { Text, TextStyle, View, ViewStyle, useColorScheme } from "react-native";
+import {
+  Text,
+  TextStyle,
+  TouchableOpacity,
+  View,
+  ViewStyle,
+  useColorScheme,
+} from "react-native";
 import Svg, { Path } from "react-native-svg";
-import { DialogToastTheme } from "@/constants/theme";
+import { getDialogToastTheme, DialogToastThemeType } from "@/constants/theme";
 
 export interface DialogToastStyles {
   dialogToastContainer?: ViewStyle;
   dialogToastInner?: ViewStyle;
   close?: ViewStyle;
+  closeText?: TextStyle;
   box?: ViewStyle;
   icon?: ViewStyle;
   title?: ViewStyle;
   titleText?: TextStyle;
   description?: ViewStyle;
   descriptionText?: TextStyle;
+  content?: ViewStyle;
+  actions?: ViewStyle;
 }
 
 interface DialogToastProps {
@@ -24,21 +34,70 @@ interface DialogToastProps {
   onClose?: () => void;
   autoHide?: boolean;
   autoHideDuration?: number;
+  actions?: React.ReactNode;
 }
+
+const mergeToastStyles = (
+  theme: DialogToastThemeType,
+  custom: DialogToastStyles,
+): DialogToastThemeType => {
+  const result: DialogToastThemeType = {
+    dialogToastContainer: theme.dialogToastContainer,
+    dialogToastInner: theme.dialogToastInner,
+    close: theme.close,
+    closeText: theme.closeText,
+    box: theme.box,
+    icon: theme.icon,
+    title: theme.title,
+    titleText: theme.titleText,
+    description: theme.description,
+    descriptionText: theme.descriptionText,
+    content: theme.content,
+    actions: theme.actions,
+  };
+
+  const themeKeys = Object.keys(theme) as Array<keyof DialogToastThemeType>;
+
+  themeKeys.forEach((key) => {
+    const themeStyle = theme[key];
+    const customStyle = custom[key as keyof DialogToastStyles];
+
+    if (customStyle) {
+      if (
+        key === "titleText" ||
+        key === "descriptionText" ||
+        key === "closeText"
+      ) {
+        result[key] = {
+          ...(themeStyle as TextStyle),
+          ...(customStyle as TextStyle),
+        } as any;
+      } else {
+        result[key] = {
+          ...(themeStyle as ViewStyle),
+          ...(customStyle as ViewStyle),
+        } as any;
+      }
+    }
+  });
+
+  return result;
+};
 
 const DialogToast: React.FC<DialogToastProps> = ({
   typeOfWindow = "info",
-  title,
-  description,
+  title: titleText,
+  description: descriptionText,
   styles: customStyles = {},
   iconSize = 48,
   onClose,
   autoHide = false,
   autoHideDuration = 3000,
+  actions,
 }: DialogToastProps) => {
   const colorScheme = useColorScheme();
-  const theme =
-    colorScheme === "dark" ? DialogToastTheme.dark : DialogToastTheme.light;
+  const theme = getDialogToastTheme(colorScheme === "dark" ? "dark" : "light");
+  const mergedStyles = mergeToastStyles(theme, customStyles);
 
   React.useEffect(() => {
     if (autoHide && onClose) {
@@ -49,20 +108,6 @@ const DialogToast: React.FC<DialogToastProps> = ({
       return () => clearTimeout(timer);
     }
   }, [autoHide, autoHideDuration, onClose]);
-
-  const mergedStyles = (
-    Object.keys(theme) as Array<keyof DialogToastStyles>
-  ).reduce((acc, key) => {
-    const themeStyle = theme[key];
-    const customStyle = customStyles[key];
-
-    if (!themeStyle) return acc;
-
-    return {
-      ...acc,
-      [key]: customStyle ? { ...themeStyle, ...customStyle } : themeStyle,
-    };
-  }, {} as DialogToastStyles);
 
   const iconRender = () => {
     const svgProps = {
@@ -128,40 +173,32 @@ const DialogToast: React.FC<DialogToastProps> = ({
     }
   };
 
+  const contentStyle: ViewStyle = customStyles.content || {};
+  const actionsStyle: ViewStyle = customStyles.actions || {};
+
   return (
-    <View
-      style={[theme.dialogToastContainer, mergedStyles.dialogToastContainer]}
-    >
-      <View style={[theme.dialogToastInner, mergedStyles.dialogToastInner]}>
+    <View style={[mergedStyles.dialogToastContainer]}>
+      <View style={[mergedStyles.dialogToastInner]}>
         {onClose && (
-          <View style={[theme.close, mergedStyles.close]}>
-            <Text
-              style={{
-                fontSize: 24,
-                color: colorScheme === "dark" ? "#fff" : "#000",
-                fontWeight: "bold",
-              }}
-            >
-              ×
-            </Text>
-          </View>
+          <TouchableOpacity style={[mergedStyles.close]} onPress={onClose}>
+            <Text style={[mergedStyles.closeText]}>×</Text>
+          </TouchableOpacity>
         )}
-        <View style={[theme.box, mergedStyles.box]}>
-          <View style={[theme.icon, mergedStyles.icon]}>{iconRender()}</View>
-          <View style={[theme.title, mergedStyles.title]}>
-            <Text style={[theme.titleText, mergedStyles.titleText]}>
-              {title}
-            </Text>
-          </View>
-          {description && (
-            <View style={[theme.description, mergedStyles.description]}>
-              <Text
-                style={[theme.descriptionText, mergedStyles.descriptionText]}
-              >
-                {description}
+        <View style={[mergedStyles.box]}>
+          <View style={[mergedStyles.icon]}>{iconRender()}</View>
+          <View style={[mergedStyles.content || {}, contentStyle]}>
+            <Text style={[mergedStyles.titleText]}>{titleText}</Text>
+            {descriptionText && (
+              <Text style={[mergedStyles.descriptionText]}>
+                {descriptionText}
               </Text>
-            </View>
-          )}
+            )}
+            {actions && (
+              <View style={[mergedStyles.actions || {}, actionsStyle]}>
+                {actions}
+              </View>
+            )}
+          </View>
         </View>
       </View>
     </View>

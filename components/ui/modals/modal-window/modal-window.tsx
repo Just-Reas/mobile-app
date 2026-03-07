@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import { ModalWindowTheme } from "@/constants/theme";
+import { getModalWindowTheme, ModalWindowThemeType } from "@/constants/theme";
 import {
   TextStyle,
   useColorScheme,
@@ -16,6 +16,7 @@ export interface ModalWindowStyles {
   modalWindowContainer?: ViewStyle;
   modalWindowInner?: ViewStyle;
   close?: ViewStyle;
+  closeText?: TextStyle;
   content?: ViewStyle;
   overlay?: ViewStyle;
 }
@@ -29,6 +30,43 @@ interface ModalWindowProps {
   showCloseButton?: boolean;
 }
 
+const mergeModalStyles = (
+  theme: ModalWindowThemeType,
+  custom: ModalWindowStyles,
+): ModalWindowThemeType => {
+  const result: ModalWindowThemeType = {
+    overlay: theme.overlay,
+    modalWindowContainer: theme.modalWindowContainer,
+    modalWindowInner: theme.modalWindowInner,
+    close: theme.close,
+    closeText: theme.closeText,
+    content: theme.content,
+  };
+
+  const themeKeys = Object.keys(theme) as Array<keyof ModalWindowThemeType>;
+
+  themeKeys.forEach((key) => {
+    const themeStyle = theme[key];
+    const customStyle = custom[key as keyof ModalWindowStyles];
+
+    if (customStyle) {
+      if (key === "closeText") {
+        result[key] = {
+          ...(themeStyle as TextStyle),
+          ...(customStyle as TextStyle),
+        } as any;
+      } else {
+        result[key] = {
+          ...(themeStyle as ViewStyle),
+          ...(customStyle as ViewStyle),
+        } as any;
+      }
+    }
+  });
+
+  return result;
+};
+
 const ModalWindow: React.FC<ModalWindowProps> = ({
   children,
   styles: customStyles = {},
@@ -38,8 +76,9 @@ const ModalWindow: React.FC<ModalWindowProps> = ({
   showCloseButton = false,
 }: ModalWindowProps) => {
   const colorScheme = useColorScheme();
-  const theme =
-    colorScheme === "dark" ? ModalWindowTheme.dark : ModalWindowTheme.light;
+  const theme = getModalWindowTheme(colorScheme === "dark" ? "dark" : "light");
+
+  const mergedStyles = mergeModalStyles(theme, customStyles);
 
   const scaleAnim = useRef(new Animated.Value(0)).current;
   const opacityAnim = useRef(new Animated.Value(0)).current;
@@ -75,22 +114,7 @@ const ModalWindow: React.FC<ModalWindowProps> = ({
     }
   }, [visible]);
 
-  const mergedStyles = (
-    Object.keys(theme) as Array<keyof ModalWindowStyles>
-  ).reduce((acc, key) => {
-    const themeStyle = theme[key];
-    const customStyle = customStyles[key];
-
-    if (!themeStyle) return acc;
-
-    return {
-      ...acc,
-      [key]: customStyle ? { ...themeStyle, ...customStyle } : themeStyle,
-    };
-  }, {} as ModalWindowStyles);
-
   const handleOverlayPress = () => {
-    console.log("Overlay pressed");
     if (closeOnOutsideClick && onClose) {
       onClose();
     }
@@ -99,18 +123,17 @@ const ModalWindow: React.FC<ModalWindowProps> = ({
   const renderContent = () => (
     <View style={{ flex: 1 }}>
       <TouchableOpacity
-        style={[theme.overlay, mergedStyles.overlay, { opacity: opacityAnim }]}
+        style={[mergedStyles.overlay, { opacity: opacityAnim }]}
         activeOpacity={1}
         onPress={handleOverlayPress}
       />
 
       <View
-        style={[theme.modalWindowContainer, mergedStyles.modalWindowContainer]}
+        style={[mergedStyles.modalWindowContainer]}
         pointerEvents="box-none"
       >
         <Animated.View
           style={[
-            theme.modalWindowInner,
             mergedStyles.modalWindowInner,
             {
               opacity: opacityAnim,
@@ -119,23 +142,12 @@ const ModalWindow: React.FC<ModalWindowProps> = ({
           ]}
         >
           {showCloseButton && onClose && (
-            <TouchableOpacity
-              style={[theme.close, mergedStyles.close]}
-              onPress={onClose}
-            >
-              <Text
-                style={{
-                  fontSize: 24,
-                  color: colorScheme === "dark" ? "#fff" : "#000",
-                  fontWeight: "bold",
-                }}
-              >
-                ×
-              </Text>
+            <TouchableOpacity style={[mergedStyles.close]} onPress={onClose}>
+              <Text style={mergedStyles.closeText}>×</Text>
             </TouchableOpacity>
           )}
 
-          <View style={[theme.content, mergedStyles.content]}>{children}</View>
+          <View style={[mergedStyles.content]}>{children}</View>
         </Animated.View>
       </View>
     </View>
