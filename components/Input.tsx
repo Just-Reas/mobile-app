@@ -1,61 +1,65 @@
-import {Text, TextInput, TouchableOpacity, View} from "react-native";
-import {restyleTheme} from "@/constants/restyle-theme";
+import {
+    Image, ImageSourcePropType, KeyboardAvoidingView, Platform, TextInput, TouchableWithoutFeedback
+} from "react-native";
+import {Box, useAppTheme} from "@/hooks/restyle";
 
 type Props = {
     value: string;
-    onChange: (value: string) => void;
+    secureTextEntry?: boolean;
+    iconPath?: ImageSourcePropType;
+    onPress?: (value: string) => void;
     placeholder?: string;
-    require?: boolean;
-    secureText?: boolean;
-    multiLine?: boolean,
+    multiline?: boolean;
     numberOfLines?: number;
-};
+}
 
-export function Input({value, onChange, placeholder, require = false, secureText = false, multiLine = false, numberOfLines = 1 }: Props) {
-    return (<View>
-        <TextInput style={{
-            color: restyleTheme.colors.text,
-            backgroundColor: restyleTheme.colors.primaryBg,
-            borderColor: restyleTheme.colors.borderAccent,
-            borderRadius: restyleTheme.borderRadii.r20,
-            borderWidth: restyleTheme.borderWidths.m,
-            paddingHorizontal: restyleTheme.spacing.m,
-            paddingVertical: restyleTheme.spacing.l,
-            fontWeight: 600,
-            fontSize: restyleTheme.textVariants.input.fontSize,
-            margin: restyleTheme.spacing.l,
-        }}
-                    placeholderTextColor={restyleTheme.colors.placeholderText}
-                    onChangeText={onChange}
-                    secureTextEntry={secureText}
-                    multiline={multiLine}
-                    numberOfLines={numberOfLines}
+const InputField = ({
+                        value, iconPath, onPress, placeholder, multiline, secureTextEntry = false, numberOfLines = 1
+                    }: Props) => {
+    const theme = useAppTheme();
+
+    const bgColor = theme.colors.secondaryBg
+    const borderColor = theme.colors.borderAccent
+    const placeholderColor = theme.colors.placeholderText
+    const textColor = theme.colors.text
+
+    return (
+        <KeyboardAvoidingView enabled={true} behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{flex: 1}}>
+            <TouchableWithoutFeedback>
+                <Box
+                    style={{
+                        flexDirection: 'row',
+                        justifyContent: 'flex-start',
+                        alignItems: 'center',
+                        position: 'relative',
+                        backgroundColor: bgColor,
+                        borderColor: borderColor,
+                        borderRadius: theme.borderRadii.r20,
+                        borderWidth: theme.borderWidths.bw2,
+                        paddingVertical: theme.spacing.xs,
+                        paddingHorizontal: theme.spacing.m,
+                        minHeight: 55,
+                    }}>
+
+                    {iconPath && <Image source={iconPath} style={[{
+                        width: theme.spacing.xl, height: theme.spacing.xl, marginLeft: theme.spacing.s
+                    }]}/>}
+
+                    <TextInput
+                        value={value}
+                        onChangeText={onPress}
+                        placeholder={placeholder}
+                        secureTextEntry={secureTextEntry}
+                        multiline={multiline}
+                        numberOfLines={numberOfLines}
+                        underlineColorAndroid="transparent"
+                        placeholderTextColor={placeholderColor}
+                        style={{width: "100%", color: textColor}}
                     />
 
-        {value ? null :
-            <TouchableOpacity activeOpacity={1} onPress={() => {}}
-                style={{
-                    position: "absolute",
-                    top: 10,
-                    left: 15,
-                    zIndex: 1,
-                    flexDirection: "row"}}>
-
-                <Text style={{marginVertical: 19,
-                    paddingLeft: restyleTheme.spacing.l,
-                    fontFamily: "System",
-                    color: restyleTheme.colors.placeholderText,
-                    paddingVertical: 0,
-                    fontWeight: 600,
-                    fontSize: restyleTheme.textVariants.input.fontSize,}}>
-                    {placeholder}</Text>
-
-                {require && (<Text style={{
-                            marginVertical: restyleTheme.spacing.py19,
-                            fontFamily: "Barlow-Regular",
-                            fontSize: 21,
-                            color: "#ff0004",
-                            marginLeft: 3}}>*</Text>)}
-        </TouchableOpacity>}
-    </View>)
+                </Box>
+            </TouchableWithoutFeedback>
+        </KeyboardAvoidingView>)
 }
+
+export default InputField;
