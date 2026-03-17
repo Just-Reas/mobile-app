@@ -1,5 +1,4 @@
 import React, { useEffect, useRef } from "react";
-import { getModalWindowTheme, ModalWindowThemeType } from "@/constants/theme";
 import {
   TextStyle,
   useColorScheme,
@@ -11,6 +10,9 @@ import {
   Platform,
   Text,
 } from "react-native";
+import { useTheme } from "@shopify/restyle";
+import { Theme } from "@/constants/theme";
+import { mergeStyles } from "@/utils/styleMerger";
 
 export interface ModalWindowStyles {
   modalWindowContainer?: ViewStyle;
@@ -30,43 +32,6 @@ interface ModalWindowProps {
   showCloseButton?: boolean;
 }
 
-const mergeModalStyles = (
-  theme: ModalWindowThemeType,
-  custom: ModalWindowStyles,
-): ModalWindowThemeType => {
-  const result: ModalWindowThemeType = {
-    overlay: theme.overlay,
-    modalWindowContainer: theme.modalWindowContainer,
-    modalWindowInner: theme.modalWindowInner,
-    close: theme.close,
-    closeText: theme.closeText,
-    content: theme.content,
-  };
-
-  const themeKeys = Object.keys(theme) as Array<keyof ModalWindowThemeType>;
-
-  themeKeys.forEach((key) => {
-    const themeStyle = theme[key];
-    const customStyle = custom[key as keyof ModalWindowStyles];
-
-    if (customStyle) {
-      if (key === "closeText") {
-        result[key] = {
-          ...(themeStyle as TextStyle),
-          ...(customStyle as TextStyle),
-        } as any;
-      } else {
-        result[key] = {
-          ...(themeStyle as ViewStyle),
-          ...(customStyle as ViewStyle),
-        } as any;
-      }
-    }
-  });
-
-  return result;
-};
-
 const ModalWindow: React.FC<ModalWindowProps> = ({
   children,
   styles: customStyles = {},
@@ -74,11 +39,75 @@ const ModalWindow: React.FC<ModalWindowProps> = ({
   onClose,
   closeOnOutsideClick = true,
   showCloseButton = false,
-}: ModalWindowProps) => {
+}) => {
+  const theme = useTheme<Theme>();
   const colorScheme = useColorScheme();
-  const theme = getModalWindowTheme(colorScheme === "dark" ? "dark" : "light");
+  const isDark = colorScheme === "dark";
 
-  const mergedStyles = mergeModalStyles(theme, customStyles);
+  const baseStyles: ModalWindowStyles = {
+    overlay: {
+      position: "absolute",
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      backgroundColor: isDark ? "rgba(0, 0, 0, 0.7)" : "rgba(0, 0, 0, 0.5)",
+      justifyContent: "center",
+      alignItems: "center",
+      zIndex: 9998,
+    },
+    modalWindowContainer: {
+      position: "absolute",
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      justifyContent: "center",
+      alignItems: "center",
+      zIndex: 9999,
+      padding: theme.spacing.xl,
+    },
+    modalWindowInner: {
+      backgroundColor: isDark ? theme.colors.dialogBackgroundDark : theme.colors.dialogBackground,
+      borderRadius: theme.borderRadii.m,
+      padding: theme.spacing.xl,
+      maxWidth: 500,
+      width: "100%",
+      maxHeight: "80%",
+      shadowColor: theme.colors.modalShadow,
+      shadowOffset: {
+        width: 0,
+        height: 2,
+      },
+      shadowOpacity: isDark ? 0.5 : 0.25,
+      shadowRadius: 3.84,
+      elevation: 5,
+      position: "relative",
+      ...(isDark ? { borderWidth: 1, borderColor: theme.colors.dialogBorderDark } : {}),
+    },
+    close: {
+      position: "absolute",
+      top: theme.spacing.m,
+      right: theme.spacing.m,
+      zIndex: 10000,
+      width: 40,
+      height: 40,
+      justifyContent: "center",
+      alignItems: "center",
+      borderRadius: theme.borderRadii.round, 
+      backgroundColor: isDark ? theme.colors.modalCloseBgDark : theme.colors.modalCloseBg,
+    },
+    closeText: {
+      fontSize: 24,
+      color: isDark ? theme.colors.modalCloseTextDark : theme.colors.modalCloseText,
+      fontWeight: "bold",
+    },
+    content: {
+      width: "100%",
+    },
+  };
+
+  const mergedStyles = mergeStyles(baseStyles, customStyles);
 
   const scaleAnim = useRef(new Animated.Value(0)).current;
   const opacityAnim = useRef(new Animated.Value(0)).current;
