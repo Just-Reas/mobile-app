@@ -1,65 +1,57 @@
-import {
-    Image, ImageSourcePropType, KeyboardAvoidingView, Platform, TextInput, TouchableWithoutFeedback
-} from "react-native";
 import {Box, useAppTheme} from "@/hooks/restyle";
+import {ThemeProvider} from "@shopify/restyle";
+import {
+    Image, ImageSourcePropType, KeyboardAvoidingView, Platform, StyleProp, TextInput, ViewStyle
+} from "react-native";
+import React from "react";
 
 type Props = {
     value: string;
+    onPress: (value: string) => void;
+    placeholder?: string;
     secureTextEntry?: boolean;
     iconPath?: ImageSourcePropType;
-    onPress?: (value: string) => void;
-    placeholder?: string;
     multiline?: boolean;
     numberOfLines?: number;
+    style?: StyleProp<ViewStyle>;
 }
 
-const InputField = ({
-                        value, iconPath, onPress, placeholder, multiline, secureTextEntry = false, numberOfLines = 1
-                    }: Props) => {
+const Input = ({value, onPress, placeholder, secureTextEntry, iconPath, multiline, numberOfLines, style}: Props) => {
     const theme = useAppTheme();
 
-    const bgColor = theme.colors.secondaryBg
-    const borderColor = theme.colors.borderAccent
-    const placeholderColor = theme.colors.placeholderText
-    const textColor = theme.colors.text
+    return (<ThemeProvider theme={theme}>
+        <KeyboardAvoidingView enabled={true} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+            <Box margin="s"
+                 paddingVertical="xxxs"
+                 paddingHorizontal="m"
+                 borderRadius="r30"
+                 borderColor="inputBorder"
+                 backgroundColor="inputBg"
+                 borderWidth={4}
+                 flexDirection="row"
+                 style={style}>
 
-    return (
-        <KeyboardAvoidingView enabled={true} behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{flex: 1}}>
-            <TouchableWithoutFeedback>
-                <Box
-                    style={{
-                        flexDirection: 'row',
-                        justifyContent: 'flex-start',
-                        alignItems: 'center',
-                        position: 'relative',
-                        backgroundColor: bgColor,
-                        borderColor: borderColor,
-                        borderRadius: theme.borderRadii.r20,
-                        borderWidth: theme.borderWidths.bw2,
-                        paddingVertical: theme.spacing.xs,
-                        paddingHorizontal: theme.spacing.m,
-                        minHeight: 55,
-                    }}>
+                {iconPath && <Image source={iconPath} alt="icon"
+                                    style={{width: 20, height: 20, marginRight: 2, alignSelf: 'center',}}/>}
 
-                    {iconPath && <Image source={iconPath} style={[{
-                        width: theme.spacing.xl, height: theme.spacing.xl, marginLeft: theme.spacing.s
-                    }]}/>}
+                <TextInput placeholder={placeholder}
+                           style={{
+                               color: theme.colors.text,
+                               fontSize: theme.textVariants.input.fontSize,
+                               lineHeight: theme.textVariants.input.lineHeight,
+                               alignItems: 'stretch',
+                               width: "100%"
+                           }}
+                           placeholderTextColor={theme.colors.placeholderTextColor}
+                           value={value}
+                           onChangeText={onPress}
+                           multiline={multiline}
+                           secureTextEntry={secureTextEntry}
+                           numberOfLines={numberOfLines}/>
 
-                    <TextInput
-                        value={value}
-                        onChangeText={onPress}
-                        placeholder={placeholder}
-                        secureTextEntry={secureTextEntry}
-                        multiline={multiline}
-                        numberOfLines={numberOfLines}
-                        underlineColorAndroid="transparent"
-                        placeholderTextColor={placeholderColor}
-                        style={{width: "100%", color: textColor}}
-                    />
-
-                </Box>
-            </TouchableWithoutFeedback>
-        </KeyboardAvoidingView>)
+            </Box>
+        </KeyboardAvoidingView>
+    </ThemeProvider>)
 }
 
-export default InputField;
+export default Input;
