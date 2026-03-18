@@ -4,7 +4,7 @@ export const restyleTheme = createTheme({
     colors: {
         bg: '#191919',
         text: '#FFFFFF',
-        placeholderText: '#CAC9C9',
+        placeholderTextColor: '#e3e0e0',
 
         brandNavy: '#1F2D65',
         brandBlue: '#5E9ECF',
@@ -13,14 +13,19 @@ export const restyleTheme = createTheme({
         borderAccent: '#7486FF',
         chipSelectedBg: 'rgba(152, 187, 255, 0.55)',
 
-        primaryBg: '#1F2D65',
-        secondaryBg: '#414C95',
+        inputBorder: "#7486FF",
+        inputBg: "#414C95",
+
+        primaryBg: "#1F2D65",
+        secondaryBg: "#414C95",
 
         transparent: 'transparent',
     },
 
     spacing: {
         none: 0,
+        xxxs: 2,
+        xxs: 3,
         xs: 6,
         s: 10,
         m: 11,
@@ -37,8 +42,8 @@ export const restyleTheme = createTheme({
         s: 8,
         m: 16,
         pill: 20,
-
         r20: 20,
+        r30: 30,
     },
 
     borderWidths: {
@@ -47,6 +52,8 @@ export const restyleTheme = createTheme({
         m: 2,
 
         bw2: 2,
+
+        bw4: 4,
 
     },
 
@@ -103,7 +110,7 @@ export const restyleTheme = createTheme({
             fontFamily: 'System',
             fontWeight: '600',
             fontSize: 24,
-            lineHeight: 18,
+            lineHeight: 30,
             color: 'text',
         }
     },
