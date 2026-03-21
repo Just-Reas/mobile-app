@@ -15,6 +15,10 @@ export const restyleTheme = createTheme({
     primaryBg: '#1F2D65',
     secondaryBg: '#414C95',
 
+    // added for chips
+    chipBg: '#B6C4DF',
+    chipTextMuted: '#FFFFFF',
+
     transparent: 'transparent',
   },
 
@@ -94,6 +98,24 @@ export const restyleTheme = createTheme({
       fontSize: 12,
       lineHeight: 18,
       color: 'brandBlue',
+    },
+
+    // added for chips
+    chipLabel: {
+      fontFamily: 'System',
+      fontWeight: '600',
+      fontSize: 12,
+      lineHeight: 16,
+      color: 'chipTextMuted',
+    },
+
+    // added for chips
+    chipLabelSelected: {
+      fontFamily: 'System',
+      fontWeight: '600',
+      fontSize: 12,
+      lineHeight: 16,
+      color: 'text',
     },
   },
 });
