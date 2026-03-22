@@ -19,8 +19,7 @@ type Props = {
 const Input = ({value, onPress, placeholder, secureTextEntry, iconPath, multiline, numberOfLines, style}: Props) => {
     const theme = useAppTheme();
 
-    return (<ThemeProvider theme={theme}>
-        <KeyboardAvoidingView enabled={true} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+    return (<KeyboardAvoidingView enabled={true} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
             <Box margin="s"
                  paddingVertical="xxxs"
                  paddingHorizontal="m"
@@ -50,8 +49,7 @@ const Input = ({value, onPress, placeholder, secureTextEntry, iconPath, multilin
                            numberOfLines={numberOfLines}/>
 
             </Box>
-        </KeyboardAvoidingView>
-    </ThemeProvider>)
+        </KeyboardAvoidingView>)
 }
 
 export default Input;
