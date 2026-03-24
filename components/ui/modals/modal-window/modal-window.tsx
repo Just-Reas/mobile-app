@@ -12,7 +12,6 @@ import {
 } from "react-native";
 import { useTheme } from "@shopify/restyle";
 import { Theme } from "@/constants/theme";
-import { mergeStyles } from "@/utils/styleMerger";
 
 export interface ModalWindowStyles {
   modalWindowContainer?: ViewStyle;
@@ -44,7 +43,7 @@ const ModalWindow: React.FC<ModalWindowProps> = ({
   const colorScheme = useColorScheme();
   const isDark = colorScheme === "dark";
 
-  const baseStyles: ModalWindowStyles = {
+  const baseStyles = {
     overlay: {
       position: "absolute",
       top: 0,
@@ -55,7 +54,7 @@ const ModalWindow: React.FC<ModalWindowProps> = ({
       justifyContent: "center",
       alignItems: "center",
       zIndex: 9998,
-    },
+    } as ViewStyle,
     modalWindowContainer: {
       position: "absolute",
       top: 0,
@@ -66,7 +65,7 @@ const ModalWindow: React.FC<ModalWindowProps> = ({
       alignItems: "center",
       zIndex: 9999,
       padding: theme.spacing.xl,
-    },
+    } as ViewStyle,
     modalWindowInner: {
       backgroundColor: isDark ? theme.colors.dialogBackgroundDark : theme.colors.dialogBackground,
       borderRadius: theme.borderRadii.m,
@@ -84,7 +83,7 @@ const ModalWindow: React.FC<ModalWindowProps> = ({
       elevation: 5,
       position: "relative",
       ...(isDark ? { borderWidth: 1, borderColor: theme.colors.dialogBorderDark } : {}),
-    },
+    } as ViewStyle,
     close: {
       position: "absolute",
       top: theme.spacing.m,
@@ -94,20 +93,27 @@ const ModalWindow: React.FC<ModalWindowProps> = ({
       height: 40,
       justifyContent: "center",
       alignItems: "center",
-      borderRadius: theme.borderRadii.round, 
+      borderRadius: theme.borderRadii.round,
       backgroundColor: isDark ? theme.colors.modalCloseBgDark : theme.colors.modalCloseBg,
-    },
+    } as ViewStyle,
     closeText: {
       fontSize: 24,
       color: isDark ? theme.colors.modalCloseTextDark : theme.colors.modalCloseText,
       fontWeight: "bold",
-    },
+    } as TextStyle,
     content: {
       width: "100%",
-    },
+    } as ViewStyle,
   };
 
-  const mergedStyles = mergeStyles(baseStyles, customStyles);
+  const mergedStyles = {
+    overlay: [baseStyles.overlay, customStyles?.overlay],
+    modalWindowContainer: [baseStyles.modalWindowContainer, customStyles?.modalWindowContainer],
+    modalWindowInner: [baseStyles.modalWindowInner, customStyles?.modalWindowInner],
+    close: [baseStyles.close, customStyles?.close],
+    closeText: [baseStyles.closeText, customStyles?.closeText],
+    content: [baseStyles.content, customStyles?.content],
+  };
 
   const scaleAnim = useRef(new Animated.Value(0)).current;
   const opacityAnim = useRef(new Animated.Value(0)).current;
@@ -158,7 +164,7 @@ const ModalWindow: React.FC<ModalWindowProps> = ({
       />
 
       <View
-        style={[mergedStyles.modalWindowContainer]}
+        style={mergedStyles.modalWindowContainer}
         pointerEvents="box-none"
       >
         <Animated.View
@@ -171,12 +177,12 @@ const ModalWindow: React.FC<ModalWindowProps> = ({
           ]}
         >
           {showCloseButton && onClose && (
-            <TouchableOpacity style={[mergedStyles.close]} onPress={onClose}>
+            <TouchableOpacity style={mergedStyles.close} onPress={onClose}>
               <Text style={mergedStyles.closeText}>×</Text>
             </TouchableOpacity>
           )}
 
-          <View style={[mergedStyles.content]}>{children}</View>
+          <View style={mergedStyles.content}>{children}</View>
         </Animated.View>
       </View>
     </View>

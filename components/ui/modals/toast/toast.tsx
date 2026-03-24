@@ -9,7 +9,6 @@ import {
 } from "react-native";
 import { useTheme } from "@shopify/restyle";
 import { Theme } from "@/constants/theme";
-import { mergeStyles } from "@/utils/styleMerger";
 import { AlertIcon } from "../../icons/AlertIcon";
 
 export interface ToastStyles {
@@ -52,7 +51,7 @@ const Toast: React.FC<ToastProps> = ({
   const colorScheme = useColorScheme();
   const isDark = colorScheme === "dark";
 
-  const baseStyles: ToastStyles = {
+  const baseStyles = {
     toastContainer: {
       position: "absolute",
       top: theme.spacing.xl,
@@ -61,7 +60,7 @@ const Toast: React.FC<ToastProps> = ({
       zIndex: 10000,
       alignItems: "center",
       pointerEvents: "box-none",
-    },
+    } as ViewStyle,
     toastInner: {
       backgroundColor: isDark ? theme.colors.toastBackgroundDark : theme.colors.toastBackground,
       borderRadius: theme.borderRadii.m,
@@ -80,7 +79,7 @@ const Toast: React.FC<ToastProps> = ({
       alignItems: "center",
       borderWidth: 1,
       borderColor: isDark ? theme.colors.toastBorderDark : theme.colors.toastBorder,
-    },
+    } as ViewStyle,
     close: {
       position: "absolute",
       top: theme.spacing.xs,
@@ -92,45 +91,56 @@ const Toast: React.FC<ToastProps> = ({
       alignItems: "center",
       borderRadius: 15,
       backgroundColor: isDark ? theme.colors.toastCloseBgDark : theme.colors.toastCloseBg,
-    },
+    } as ViewStyle,
     closeText: {
       fontSize: 24,
       color: isDark ? theme.colors.modalCloseTextDark : theme.colors.modalCloseText,
       fontWeight: "bold",
       lineHeight: 24,
       textAlign: "center",
-    },
+    } as TextStyle,
     box: {
       flex: 1,
       flexDirection: "row",
       alignItems: "center",
       gap: theme.spacing.m,
-    },
+    } as ViewStyle,
     icon: {
       marginRight: theme.spacing.s,
-    },
+    } as ViewStyle,
     titleText: {
       fontSize: 16,
       fontWeight: "600",
       color: isDark ? theme.colors.toastTitleDark : theme.colors.toastTitle,
-    },
+    } as TextStyle,
     descriptionText: {
       fontSize: 14,
       color: isDark ? theme.colors.toastDescriptionDark : theme.colors.toastDescription,
-    },
+    } as TextStyle,
     content: {
       flex: 1,
       flexDirection: "column",
-    },
+    } as ViewStyle,
     actions: {
       marginTop: theme.spacing.s,
       flexDirection: "row",
       justifyContent: "flex-start",
       gap: theme.spacing.s,
-    },
+    } as ViewStyle,
   };
 
-  const mergedStyles = mergeStyles(baseStyles, customStyles);
+  const mergedStyles = {
+    toastContainer: [baseStyles.toastContainer, customStyles?.toastContainer],
+    toastInner: [baseStyles.toastInner, customStyles?.toastInner],
+    close: [baseStyles.close, customStyles?.close],
+    closeText: [baseStyles.closeText, customStyles?.closeText],
+    box: [baseStyles.box, customStyles?.box],
+    icon: [baseStyles.icon, customStyles?.icon],
+    titleText: [baseStyles.titleText, customStyles?.titleText],
+    descriptionText: [baseStyles.descriptionText, customStyles?.descriptionText],
+    content: [baseStyles.content, customStyles?.content],
+    actions: [baseStyles.actions, customStyles?.actions],
+  };
 
   useEffect(() => {
     if (autoHide && onClose) {
@@ -143,26 +153,26 @@ const Toast: React.FC<ToastProps> = ({
   }, [autoHide, autoHideDuration, onClose]);
 
   return (
-    <View style={[mergedStyles.toastContainer]}>
-      <View style={[mergedStyles.toastInner]}>
+    <View style={mergedStyles.toastContainer}>
+      <View style={mergedStyles.toastInner}>
         {onClose && (
-          <TouchableOpacity style={[mergedStyles.close]} onPress={onClose}>
-            <Text style={[mergedStyles.closeText]}>×</Text>
+          <TouchableOpacity style={mergedStyles.close} onPress={onClose}>
+            <Text style={mergedStyles.closeText}>×</Text>
           </TouchableOpacity>
         )}
-        <View style={[mergedStyles.box]}>
-          <View style={[mergedStyles.icon]}>
+        <View style={mergedStyles.box}>
+          <View style={mergedStyles.icon}>
             <AlertIcon type={type} size={iconSize} />
           </View>
-          <View style={[mergedStyles.content]}>
-            <Text style={[mergedStyles.titleText]}>{title}</Text>
+          <View style={mergedStyles.content}>
+            <Text style={mergedStyles.titleText}>{title}</Text>
             {description && (
-              <Text style={[mergedStyles.descriptionText]}>
+              <Text style={mergedStyles.descriptionText}>
                 {description}
               </Text>
             )}
             {actions && (
-              <View style={[mergedStyles.actions]}>
+              <View style={mergedStyles.actions}>
                 {actions}
               </View>
             )}
