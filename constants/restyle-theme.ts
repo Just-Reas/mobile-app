@@ -1,123 +1,119 @@
 import { createTheme } from '@shopify/restyle';
 
 export const restyleTheme = createTheme({
-  colors: {
-    bg: '#191919',
-    text: '#FFFFFF',
+    colors: {
+        bg: '#191919',
+        text: '#FFFFFF',
+        placeholderTextColor: '#e3e0e0',
 
-    brandNavy: '#1F2D65',
-    brandBlue: '#5E9ECF',
-    brandIndigo: '#414C95',
+        brandNavy: '#1F2D65',
+        brandBlue: '#5E9ECF',
+        brandIndigo: '#414C95',
 
-    borderAccent: '#7486FF',
-    chipSelectedBg: 'rgba(152, 187, 255, 0.55)',
+        borderAccent: '#7486FF',
+        chipSelectedBg: 'rgba(152, 187, 255, 0.55)',
 
-    primaryBg: '#1F2D65',
-    secondaryBg: '#414C95',
+        inputBorder: "#7486FF",
+        inputBg: "#414C95",
 
-    // added for chips
-    chipBg: '#B6C4DF',
-    chipTextMuted: '#FFFFFF',
+        primaryBg: "#1F2D65",
+        secondaryBg: "#414C95",
 
-    transparent: 'transparent',
-  },
-
-  spacing: {
-    none: 0,
-    xs: 6,
-    s: 10,
-    m: 11,
-    l: 14,
-    xl: 20,
-
-    px11: 11,
-    py14: 14,
-  },
-
-  borderRadii: {
-    none: 0,
-    s: 8,
-    m: 16,
-    pill: 20,
-
-    r20: 20,
-  },
-
-  borderWidths: {
-    none: 0,
-    s: 1,
-    m: 2,
-
-    bw2: 2,
-  },
-
-  textVariants: {
-    defaults: {
-      color: 'text',
-      fontFamily: 'System',
-      fontWeight: '400',
-      fontSize: 16,
-      lineHeight: 20,
+        transparent: 'transparent',
     },
 
-    buttonChip: {
-      fontFamily: 'System',
-      fontWeight: '600',
-      fontSize: 24,
-      lineHeight: 24,
-      color: 'text',
+    spacing: {
+        none: 0,
+        xxxs: 2,
+        xxs: 3,
+        xs: 6,
+        s: 10,
+        m: 11,
+        l: 14,
+        xl: 20,
+
+        px11: 11,
+        py14: 14,
+        py19: 19,
     },
 
-    buttonOutline: {
-      fontFamily: 'System',
-      fontWeight: '600',
-      fontSize: 20,
-      lineHeight: 24,
-      color: 'brandBlue',
+    borderRadii: {
+        none: 0,
+        s: 8,
+        m: 16,
+        pill: 20,
+        r20: 20,
+        r30: 30,
     },
 
-    buttonPrimary: {
-      fontFamily: 'System',
-      fontWeight: '600',
-      fontSize: 24,
-      lineHeight: 24,
-      color: 'text',
+    borderWidths: {
+        none: 0,
+        s: 1,
+        m: 2,
+
+        bw2: 2,
+
+        bw4: 4,
+
     },
 
-    buttonSecondary: {
-      fontFamily: 'System',
-      fontWeight: '600',
-      fontSize: 20,
-      lineHeight: 24,
-      color: 'borderAccent',
-    },
+    textVariants: {
+        defaults: {
+            color: 'text',
+            fontFamily: 'System',
+            fontWeight: '400',
+            fontSize: 16,
+            lineHeight: 20,
+        },
 
-    radioLabel: {
-      fontFamily: 'System',
-      fontWeight: '600',
-      fontSize: 12,
-      lineHeight: 18,
-      color: 'brandBlue',
-    },
+        buttonChip: {
+            fontFamily: 'System',
+            fontWeight: '600',
+            fontSize: 24,
+            lineHeight: 24,
+            color: 'text',
+        },
 
-    // added for chips
-    chipLabel: {
-      fontFamily: 'System',
-      fontWeight: '600',
-      fontSize: 12,
-      lineHeight: 16,
-      color: 'chipTextMuted',
-    },
+        buttonOutline: {
+            fontFamily: 'System',
+            fontWeight: '600',
+            fontSize: 20,
+            lineHeight: 24,
+            color: 'brandBlue',
+        },
 
-    // added for chips
-    chipLabelSelected: {
-      fontFamily: 'System',
-      fontWeight: '600',
-      fontSize: 12,
-      lineHeight: 16,
-      color: 'text',
+        buttonPrimary: {
+            fontFamily: 'System',
+            fontWeight: '600',
+            fontSize: 24,
+            lineHeight: 24,
+            color: 'text',
+        },
+
+        buttonSecondary: {
+            fontFamily: 'System',
+            fontWeight: '600',
+            fontSize: 20,
+            lineHeight: 24,
+            color: 'borderAccent',
+        },
+
+        radioLabel: {
+            fontFamily: 'System',
+            fontWeight: '600',
+            fontSize: 12,
+            lineHeight: 18,
+            color: 'brandBlue',
+        },
+
+        input: {
+            fontFamily: 'System',
+            fontWeight: '600',
+            fontSize: 24,
+            lineHeight: 30,
+            color: 'text',
+        }
     },
-  },
 });
 
 export type AppTheme = typeof restyleTheme;
