@@ -11,9 +11,9 @@ import {
 import { useTheme } from "@shopify/restyle";
 import { Theme } from "@/constants/theme";
 import ModalWindow from "@/components/ui/modals/modal-window/modal-window";
-import InfoIcon from "@/assets/icons/info.svg";
-import SuccessIcon from "@/assets/icons/success.svg";
-import ErrorIcon from "@/assets/icons/error.svg";
+import InfoIcon from "@/assets/modal-icons/info.svg";
+import SuccessIcon from "@/assets/modal-icons/success.svg";
+import ErrorIcon from "@/assets/modal-icons/error.svg";
 
 export interface AlertWindowStyles {
   box?: ViewStyle;
@@ -35,6 +35,7 @@ interface AlertWindowProps {
   visible: boolean;
   styles?: AlertWindowStyles;
   iconSize?: number;
+  iconColor?: string;
   onClose?: () => void;
   onCancel?: () => void;
   onSuccess?: () => void;
@@ -51,6 +52,12 @@ const IconMap = {
   error: ErrorIcon,
 };
 
+const DefaultIconColors = {
+  info: "#3b82f6",
+  success: "#10b981",
+  error: "#ef4444",
+};
+
 const AlertWindow: React.FC<AlertWindowProps> = ({
   type = "info",
   title,
@@ -58,6 +65,7 @@ const AlertWindow: React.FC<AlertWindowProps> = ({
   visible = false,
   styles: customStyles = {},
   iconSize = 48,
+  iconColor,
   onClose,
   onCancel,
   onSuccess,
@@ -72,6 +80,8 @@ const AlertWindow: React.FC<AlertWindowProps> = ({
 
   const dynamicMaxHeight = screenHeight * 0.6;
   const IconComponent = IconMap[type];
+
+  const resolvedIconColor = iconColor || DefaultIconColors[type];
 
   const styles = useMemo(
     () =>
@@ -137,12 +147,14 @@ const AlertWindow: React.FC<AlertWindowProps> = ({
           gap: theme.spacing.s,
         },
       }),
-    [theme]
+    [theme],
   );
 
   const renderActions = () => {
     if (actions) {
-      return <View style={[styles.actions, customStyles.actions]}>{actions}</View>;
+      return (
+        <View style={[styles.actions, customStyles.actions]}>{actions}</View>
+      );
     }
 
     if (onCancel || onSuccess) {
@@ -153,7 +165,9 @@ const AlertWindow: React.FC<AlertWindowProps> = ({
               style={[styles.cancelButton, customStyles.cancelButton]}
               onPress={onCancel}
             >
-              <Text style={[styles.cancelButtonText, customStyles.cancelButtonText]}>
+              <Text
+                style={[styles.cancelButtonText, customStyles.cancelButtonText]}
+              >
                 {cancelText}
               </Text>
             </TouchableOpacity>
@@ -163,7 +177,12 @@ const AlertWindow: React.FC<AlertWindowProps> = ({
               style={[styles.successButton, customStyles.successButton]}
               onPress={onSuccess}
             >
-              <Text style={[styles.successButtonText, customStyles.successButtonText]}>
+              <Text
+                style={[
+                  styles.successButtonText,
+                  customStyles.successButtonText,
+                ]}
+              >
                 {successText}
               </Text>
             </TouchableOpacity>
@@ -187,7 +206,12 @@ const AlertWindow: React.FC<AlertWindowProps> = ({
     >
       <View style={[styles.box, customStyles.box]}>
         <View style={[styles.icon, customStyles.icon]}>
-          <IconComponent width={iconSize} height={iconSize} />
+          <IconComponent
+            width={iconSize}
+            height={iconSize}
+            color={resolvedIconColor}
+            fill={resolvedIconColor}
+          />
         </View>
         <Text style={[styles.titleText, customStyles.titleText]}>{title}</Text>
         <Text style={[styles.descriptionText, customStyles.descriptionText]}>

@@ -5,14 +5,13 @@ import {
   TouchableOpacity,
   View,
   ViewStyle,
-  useColorScheme,
   StyleSheet,
 } from "react-native";
 import { useTheme } from "@shopify/restyle";
 import { Theme } from "@/constants/theme";
-import InfoIcon from "@/assets/icons/info.svg";
-import SuccessIcon from "@/assets/icons/success.svg";
-import ErrorIcon from "@/assets/icons/error.svg";
+import InfoIcon from "@/assets/modal-icons/info.svg";
+import SuccessIcon from "@/assets/modal-icons/success.svg";
+import ErrorIcon from "@/assets/modal-icons/error.svg";
 
 export interface ToastStyles {
   toastContainer?: ViewStyle;
@@ -33,6 +32,7 @@ interface ToastProps {
   description?: string;
   styles?: ToastStyles;
   iconSize?: number;
+  iconColor?: string;
   onClose?: () => void;
   autoHide?: boolean;
   autoHideDuration?: number;
@@ -44,6 +44,11 @@ const IconMap = {
   success: SuccessIcon,
   error: ErrorIcon,
 };
+const DefaultIconColors = {
+  info: "#3b82f6",
+  success: "#10b981",
+  error: "#ef4444",
+};
 
 const Toast: React.FC<ToastProps> = ({
   type = "info",
@@ -51,16 +56,16 @@ const Toast: React.FC<ToastProps> = ({
   description,
   styles: customStyles = {},
   iconSize = 48,
+  iconColor,
   onClose,
   autoHide = false,
   autoHideDuration = 3000,
   actions,
 }) => {
   const theme = useTheme<Theme>();
-  const colorScheme = useColorScheme();
-  const isDark = colorScheme === "dark";
 
   const IconComponent = IconMap[type];
+  const resolvedIconColor = iconColor || DefaultIconColors[type];
 
   const styles = useMemo(
     () =>
@@ -75,9 +80,7 @@ const Toast: React.FC<ToastProps> = ({
           pointerEvents: "box-none" as const,
         },
         toastInner: {
-          backgroundColor: isDark
-            ? theme.colors.toastBackgroundDark
-            : theme.colors.toastBackground,
+          backgroundColor: theme.colors.toastBackground,
           borderRadius: theme.borderRadii.m,
           padding: theme.spacing.l,
           minWidth: 300,
@@ -87,15 +90,13 @@ const Toast: React.FC<ToastProps> = ({
             width: 0,
             height: 2,
           },
-          shadowOpacity: isDark ? 0.5 : 0.25,
+          shadowOpacity: 0.25,
           shadowRadius: 3.84,
           elevation: 5,
           flexDirection: "row",
           alignItems: "center",
           borderWidth: 1,
-          borderColor: isDark
-            ? theme.colors.toastBorderDark
-            : theme.colors.toastBorder,
+          borderColor: theme.colors.toastBorder,
         },
         close: {
           position: "absolute",
@@ -107,15 +108,11 @@ const Toast: React.FC<ToastProps> = ({
           justifyContent: "center",
           alignItems: "center",
           borderRadius: 15,
-          backgroundColor: isDark
-            ? theme.colors.toastCloseBgDark
-            : theme.colors.toastCloseBg,
+          backgroundColor: theme.colors.toastCloseBg,
         },
         closeText: {
           fontSize: 24,
-          color: isDark
-            ? theme.colors.modalCloseTextDark
-            : theme.colors.modalCloseText,
+          color: theme.colors.modalCloseText,
           fontWeight: "bold",
           lineHeight: 24,
           textAlign: "center",
@@ -132,13 +129,11 @@ const Toast: React.FC<ToastProps> = ({
         titleText: {
           fontSize: 16,
           fontWeight: "600",
-          color: isDark ? theme.colors.toastTitleDark : theme.colors.toastTitle,
+          color: theme.colors.toastTitle,
         },
         descriptionText: {
           fontSize: 14,
-          color: isDark
-            ? theme.colors.toastDescriptionDark
-            : theme.colors.toastDescription,
+          color: theme.colors.toastDescription,
         },
         content: {
           flex: 1,
@@ -151,7 +146,7 @@ const Toast: React.FC<ToastProps> = ({
           gap: theme.spacing.s,
         },
       }),
-    [theme, isDark]
+    [theme],
   );
 
   useEffect(() => {
@@ -168,26 +163,42 @@ const Toast: React.FC<ToastProps> = ({
     <View style={[styles.toastContainer, customStyles.toastContainer]}>
       <View style={[styles.toastInner, customStyles.toastInner]}>
         {onClose && (
-          <TouchableOpacity style={[styles.close, customStyles.close]} onPress={onClose}>
+          <TouchableOpacity
+            style={[styles.close, customStyles.close]}
+            onPress={onClose}
+          >
             <Text style={[styles.closeText, customStyles.closeText]}>×</Text>
           </TouchableOpacity>
         )}
 
         <View style={[styles.box, customStyles.box]}>
           <View style={[styles.icon, customStyles.icon]}>
-            <IconComponent width={iconSize} height={iconSize} />
+            <IconComponent
+              width={iconSize}
+              height={iconSize}
+              color={resolvedIconColor}
+              fill={resolvedIconColor}
+            />
           </View>
 
           <View style={[styles.content, customStyles.content]}>
-            <Text style={[styles.titleText, customStyles.titleText]}>{title}</Text>
+            <Text style={[styles.titleText, customStyles.titleText]}>
+              {title}
+            </Text>
 
             {description && (
-              <Text style={[styles.descriptionText, customStyles.descriptionText]}>
+              <Text
+                style={[styles.descriptionText, customStyles.descriptionText]}
+              >
                 {description}
               </Text>
             )}
 
-            {actions && <View style={[styles.actions, customStyles.actions]}>{actions}</View>}
+            {actions && (
+              <View style={[styles.actions, customStyles.actions]}>
+                {actions}
+              </View>
+            )}
           </View>
         </View>
       </View>
